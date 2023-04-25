@@ -4,6 +4,7 @@ from pandas import read_csv
 from flask import jsonify
 import numpy as np
 import config
+import bll
 from bll import get_weather_by_date
 from flask import request
 
@@ -34,6 +35,37 @@ def weather():
     for weather in weather_data:
         weather_json.append(weather.to_dict())
     return jsonify(weather_json)
+
+# get population data by city,default city is 0
+@app.route("/population", methods=["POST"])
+def population():
+    city = request.form.get("cityId")
+    population_data = bll.get_population_by_city(city)
+    # convert population object list to json list
+    population_json = []
+    for population in population_data:
+        population_json.append(population.to_dict())
+    return jsonify(population_json)
+
+# get all industrial data
+@app.route("/industrial", methods=["POST"])
+def industrial():
+    industrial_data = bll.get_industrial_production()
+    # convert industrial object list to json list
+    industrial_json = []
+    for industrial in industrial_data:
+        industrial_json.append(industrial.to_dict())
+    return jsonify(industrial_json)
+
+# get all finance data
+@app.route("/finance", methods=["POST"])
+def finance():
+    finance_data = bll.get_finance()
+    # convert finance object list to json list
+    finance_json = []
+    for finance in finance_data:
+        finance_json.append(finance.to_dict())
+    return jsonify(finance_json)
 
 @app.route("/data/<int:row>")
 def get_row(row):

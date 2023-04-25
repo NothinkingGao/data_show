@@ -85,6 +85,130 @@ function showWeatherChart(data) {
 }
 
 
+// 使用echarts的折线显示人口数据，横坐标是时间，纵坐标是人口
+function showPopulationChart(data) {
+    var myChart = echarts.init(document.getElementById('populationChart'));
+    console.log('data', data)
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: '人口数据'
+        },
+        tooltip: {},
+        legend: {
+            data:['人口']
+        },
+        xAxis: {
+            data: data.map(function(item) {
+                return item.year;
+            }
+        )},
+        yAxis: {},
+        series: [{
+            name: '人口',
+            type: 'line',
+            data: data.map(function(item) {
+                return item.population;
+            }
+        )}]
+    };
+    myChart.on('mouseover', function (params) {
+        var index = params.dataIndex
+        var year = data[index].year
+        var population = data[index].population
+        var tips = `年份: ${year}`
+        tips += `<br>人口: ${population}`
+        option.tooltip.formatter = tips
+        myChart.setOption(option)
+    })
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
+
+// 使用echarts的折线显示GDP数据，横坐标是时间，纵坐标是GDP
+function showIndustrialChart(data) {
+    var myChart = echarts.init(document.getElementById('industrialChart'));
+    console.log('data', data)
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: '工业生产总值数据'
+        },
+        tooltip: {},
+        legend: {
+            data:['production']
+        },
+        xAxis: {
+            data: data.map(function(item) {
+                return item.year;
+            }
+        )},
+        yAxis: {},
+        series: [{
+            name: 'production',
+            type: 'line',
+            data: data.map(function(item) {
+                return item.production;
+            }
+        )}]
+    };
+    myChart.on('mouseover', function (params) {
+        var index = params.dataIndex
+        var year = data[index].year
+        var gdp = data[index].production
+        var tips = `年份: ${year}`
+        tips += `<br>Production: ${gdp}`
+        option.tooltip.formatter = tips
+        myChart.setOption(option)
+    })
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
+// 使用echarts的折线显示finance数据，横坐标是年份，纵坐标是金额,单位是(万元)
+function showFinanceChart(data) {
+    var myChart = echarts.init(document.getElementById('financeChart'));
+    console.log('data', data)
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: '财政收入数据'
+        },
+        tooltip: {},
+        legend: {
+            data:['finance']
+        },
+        xAxis: {
+            data: data.map(function(item) {
+                return item.year;
+            }
+        )},
+        yAxis: {},
+        series: [{
+            name: 'finance',
+            type: 'line',
+            data: data.map(function(item) {
+                return item.money;
+            }
+        )}]
+    };
+    myChart.on('mouseover', function (params) {
+        var index = params.dataIndex
+
+        var year = data[index].year
+        var finance = data[index].money;
+        var tips = `年份: ${year}`
+        tips += `<br>Finance: ${finance}`
+        option.tooltip.formatter = tips
+        myChart.setOption(option)
+    })
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
+
+
 // append data in table
 function appendDataInTable(data) {
     // append data in table
@@ -137,6 +261,55 @@ function getDataFromServer(startDatetime, endDatetime) {
     })
 }
 
+// get post data from server by city id
+function getPopulationFromServer(cityId) {
+    return $.ajax({
+        url: server + '/population',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            cityId: cityId
+        },
+        success: function(data) {
+            return data
+        },
+        error: function(err) {
+            console.log(err)
+        }
+    })
+}
+
+// get industrial data from server
+function getIndustrialFromServer() {
+    return $.ajax({
+        url: server + '/industrial',
+        type: 'POST',
+        dataType: 'json',
+        success: function(data) {
+            return data
+        },
+        error: function(err) {
+            console.log(err)
+        }
+    })
+}
+
+// get finance data from server
+function getFinanceFromServer() {
+    return $.ajax({
+        url: server + '/finance',
+        type: 'POST',
+        dataType: 'json',
+        success: function(data) {
+            return data
+        },
+        error: function(err) {
+            console.log(err)
+        }
+    })
+}
+
+
 jQuery(document).ready(function($) {
     // add one day and get data from server every 1 second
     var startDatetime = '2015-01-01'
@@ -159,4 +332,22 @@ jQuery(document).ready(function($) {
         endDate.setDate(endDate.getDate() + 1)
         endDatetime = formatDate(endDate)
     }, 1000)
+
+    // 显示人口数据
+    var cityId = 0
+    getPopulationFromServer(cityId).then(function(data) {
+        showPopulationChart(data)
+    })
+
+    // 显示工业数据
+    getIndustrialFromServer().then(function(data) {
+        console.log('data', data);
+        showIndustrialChart(data)
+    })
+
+    // 显示财政数据
+    getFinanceFromServer().then(function(data) {
+        console.log('data', data);
+        showFinanceChart(data)
+    })
 })
