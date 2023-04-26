@@ -53,15 +53,6 @@ function init() {
     start
 }
 
-# push code to github
-function push() {
-    echo "Pushing code to github..."
-    cd $PROJECT_DIR
-    git add .
-    git commit -m "update"
-    git push origin master
-}
-
 
 # restart the server
 function restart() {

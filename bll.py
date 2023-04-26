@@ -35,7 +35,6 @@ def get_finance():
     return finance
 
 
-
 # test get_weather_by_date
 if __name__ == "__main__":
     print(get_weather_by_date("2015-1-1","2015-1-5"))
